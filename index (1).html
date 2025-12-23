@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valoració Hiperbilirrubinèmia Neonatal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 400;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .result-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .result-danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .recommendation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Hiperbilirrubinèmia Neonatal</h1>
+            <p>Valoració segons corbes de Bhutani modificades</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>ℹ️ Informació:</strong> Aquesta eina calcula els llindars de fototeràpia i exanguinotransfusió segons l'edat gestacional, hores de vida i factors de risc del nadó.
+            </div>
+
+            <form id="bilirubinForm">
+                <div class="form-group">
+                    <label for="gestationalAge">Edat Gestacional</label>
+                    <select id="gestationalAge" required>
+                        <option value="">Selecciona l'edat gestacional</option>
+                        <option value="<1000g">&lt;1000g</option>
+                        <option value="1000-1500">1000-1500g o &lt;31 setmanes</option>
+                        <option value="1500-2500">1500-2500g o 31-35 setmanes</option>
+                        <option value="35">35 setmanes</option>
+                        <option value="36">36 setmanes</option>
+                        <option value="37">37 setmanes</option>
+                        <option value="38">38 setmanes</option>
+                        <option value="39">39 setmanes</option>
+                        <option value="40">≥40 setmanes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="hours">Hores de vida</label>
+                    <input type="number" id="hours" min="0" max="336" step="1" required>
+                    <div class="help-text">Entre 0 i 336 hores (14 dies)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bilirubin">Bilirrubina total (mg/dL)</label>
+                    <input type="number" id="bilirubin" min="0" max="30" step="0.1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="albumin">Albúmina (g/dL) - Opcional</label>
+                    <input type="number" id="albumin" min="0" max="10" step="0.1">
+                    <div class="help-text">Si es deixa en blanc, no es calcularà la ràtio bili/alb</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Factors de risc (selecciona si n'hi ha)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hemolysis" name="riskFactors">
+                            <label for="hemolysis">Hemòlisi</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="apgar" name="riskFactors">
+                            <label for="apgar">Apgar &lt;6</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="distress" name="riskFactors">
+                            <label for="distress">Patiment fetal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="meningitis" name="riskFactors">
+                            <label for="meningitis">Meningitis</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acidosis" name="riskFactors">
+                            <label for="acidosis">pH &lt;7.15 &gt;1h</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hypoxia" name="riskFactors">
+                            <label for="hypoxia">pO2 &lt;40 &gt;1h</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hypothermia" name="riskFactors">
+                            <label for="hypothermia">Temp &lt;35°C &gt;1h</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hypoproteinemia" name="riskFactors">
+                            <label for="hypoproteinemia">Prot &lt;40 g/L</label>
+                        </div>
+                    </div>
+                    <div class="help-text">Cada factor de risc suma 2 punts (disminueix els llindars)</div>
+                </div>
+
+                <button type="submit" class="btn">📊 Calcular Recomanació</button>
+            </form>
+
+            <div id="results" class="results"></div>
+            
+            <div id="chartContainer" style="display: none; margin-top: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="text-align: center; color: #333; margin-bottom: 20px;">📊 Gràfica de Bilirrubina</h3>
+                <canvas id="bilirubinChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data points extracted directly from Excel for each gestational age
+        const thresholdData = {
+            '35': {
+                noRisk: {
+                    ft: [[0,6.5],[6,7.2],[12,8.5],[18,9.5],[24,10.5],[30,11.5],[36,12.5],[42,13.2],[48,14],[54,14.9],[60,15.5],[66,16.2],[72,16.8],[78,17.3],[84,17.9],[90,18.2],[96,18.7]],
+                    et: [[0,14.8],[6,15.6],[12,16.3],[18,17],[24,18],[30,18.6],[36,19.3],[42,20],[48,20.8],[54,21.2],[60,21.9],[66,22.4],[72,22.9],[78,23.3],[84,23.8],[90,24.2],[96,24.5]]
+                },
+                risk: {
+                    ft: [[0,4],[6,6],[12,7],[18,8],[24,9],[30,10],[36,10.5],[42,11.5],[48,12],[54,13],[60,13.5],[66,14],[72,14.5],[78,15],[84,15.5],[90,15.9],[96,16.1]],
+                    et: [[0,13.1],[6,14],[12,14.6],[18,15.5],[24,16],[30,16.8],[36,17.4],[42,17.9],[48,18.4],[54,18.9],[60,19.3],[66,19.8],[72,20.1],[78,20.4],[84,20.8],[90,20.9],[96,21]]
+                }
+            },
+            '36': {
+                noRisk: {
+                    ft: [[0,7],[6,8],[12,9],[18,10],[24,11.1],[30,12],[36,13],[42,14],[48,14.8],[54,15.6],[60,16.1],[66,17],[72,17.5],[78,18],[84,18.6],[90,19],[96,19.3]],
+                    et: [[0,16],[6,16.7],[12,17.5],[18,18.3],[24,19],[30,19.9],[36,20.6],[42,21.2],[48,21.9],[54,22.5],[60,23],[66,23.6],[72,24],[78,24.6],[84,25],[90,25.3],[96,25.6]]
+                },
+                risk: {
+                    ft: [[0,5],[6,6.2],[12,7.5],[18,8.5],[24,9.5],[30,10.5],[36,11.2],[42,12],[48,13],[54,13.6],[60,14.2],[66,14.8],[72,15.3],[78,15.9],[84,16.2],[90,16.8],[96,17]],
+                    et: [[0,13.8],[6,14.4],[12,15.2],[18,16],[24,16.6],[30,17.2],[36,18],[42,18.5],[48,19.1],[54,19.5],[60,20],[66,20.4],[72,20.9],[78,21.2],[84,21.6],[90,21.9],[96,22]]
+                }
+            },
+            '37': {
+                noRisk: {
+                    ft: [[0,7.5],[6,8.5],[12,9.5],[18,10.8],[24,11.8],[30,12.5],[36,13.7],[42,14.5],[48,15.3],[54,16.1],[60,16.9],[66,17.6],[72,18],[78,18.7],[84,19.2],[90,19.7],[96,20]],
+                    et: [[0,17],[6,17.8],[12,18.8],[18,19.5],[24,20.3],[30,21],[36,21.9],[42,22.6],[48,23.1],[54,23.8],[60,24.3],[66,24.8],[72,25.2],[78,25.7],[84,26],[90,26.4],[96,26.7]]
+                },
+                risk: {
+                    ft: [[0,6],[6,7],[12,8],[18,9],[24,10],[30,11],[36,11.9],[42,12.8],[48,13.6],[54,14.2],[60,15],[66,15.6],[72,16.1],[78,16.8],[84,17.2],[90,17.7],[96,17.9]],
+                    et: [[0,14.3],[6,14.9],[12,15.8],[18,16.6],[24,17.2],[30,17.9],[36,18.5],[42,19.2],[48,19.7],[54,20.3],[60,20.8],[66,21.2],[72,21.7],[78,22.1],[84,22.4],[90,22.8],[96,23]]
+                }
+            },
+            '38': {
+                noRisk: {
+                    ft: [[0,8],[6,9],[12,10],[18,11.1],[24,12.2],[30,13.1],[36,14.1],[42,15],[48,16],[54,16.9],[60,17.5],[66,18.1],[72,18.8],[78,19.4],[84,20],[90,20.4],[96,20.9]],
+                    et: [[0,18],[6,19],[12,19.9],[18,20.5],[24,21.4],[30,22],[36,22.8],[42,23.4],[48,24],[54,24.7],[60,25],[66,25.5],[72,26],[78,26.2],[84,26.5],[90,26.8],[96,27]]
+                },
+                risk: {
+                    ft: [[0,6.5],[6,7.2],[12,8.5],[18,9.5],[24,10.5],[30,11.5],[36,12.3],[42,13.2],[48,14],[54,14.8],[60,15.5],[66,16],[72,16.6],[78,17.1],[84,17.5],[90,17.9],[96,18.2]],
+                    et: [[0,14.9],[6,15.5],[12,16.3],[18,17.1],[24,17.6],[30,18.3],[36,19],[42,19.6],[48,20.1],[54,20.6],[60,21.1],[66,21.6],[72,22.1],[78,22.5],[84,22.9],[90,23.2],[96,23.5]]
+                }
+            },
+            '39': {
+                noRisk: {
+                    ft: [[0,8.5],[6,9.5],[12,10.5],[18,11.8],[24,12.9],[30,13.9],[36,14.8],[42,15.7],[48,16.6],[54,17.5],[60,18],[66,18.8],[72,19.6],[78,20],[84,20.7],[90,21],[96,21.5]],
+                    et: [[0,18],[6,19],[12,19.9],[18,20.5],[24,21.4],[30,22],[36,22.8],[42,23.4],[48,24],[54,24.7],[60,25],[66,25.5],[72,26],[78,26.2],[84,26.5],[90,26.8],[96,27]]
+                },
+                risk: {
+                    ft: [[0,6.5],[6,7.2],[12,8.5],[18,9.5],[24,10.5],[30,11.5],[36,12.3],[42,13.2],[48,14],[54,14.8],[60,15.5],[66,16],[72,16.6],[78,17.1],[84,17.5],[90,17.9],[96,18.2]],
+                    et: [[0,14.9],[6,15.5],[12,16.3],[18,17.1],[24,17.6],[30,18.3],[36,19],[42,19.6],[48,20.1],[54,20.6],[60,21.1],[66,21.6],[72,22.1],[78,22.5],[84,22.9],[90,23.2],[96,23.5]]
+                }
+            },
+            '40': {
+                noRisk: {
+                    ft: [[0,9],[6,10],[12,11],[18,12.2],[24,13.2],[30,14.2],[36,15.2],[42,16.1],[48,17],[54,17.9],[60,18.6],[66,19.2],[72,19.9],[78,20.4],[84,20.9],[90,21.3],[96,21.8]],
+                    et: [[0,18],[6,19],[12,19.9],[18,20.5],[24,21.4],[30,22],[36,22.8],[42,23.4],[48,24],[54,24.7],[60,25],[66,25.5],[72,26],[78,26.2],[84,26.5],[90,26.8],[96,27]]
+                },
+                risk: {
+                    ft: [[0,6.5],[6,7.2],[12,8.5],[18,9.5],[24,10.5],[30,11.5],[36,12.3],[42,13.2],[48,14],[54,14.8],[60,15.5],[66,16],[72,16.6],[78,17.1],[84,17.5],[90,17.9],[96,18.2]],
+                    et: [[0,14.9],[6,15.5],[12,16.3],[18,17.1],[24,17.6],[30,18.3],[36,19],[42,19.6],[48,20.1],[54,20.6],[60,21.1],[66,21.6],[72,22.1],[78,22.5],[84,22.9],[90,23.2],[96,23.5]]
+                }
+            }
+        };
+
+        // Linear interpolation function
+        function interpolate(hours, dataPoints) {
+            // Find the two points to interpolate between
+            for (let i = 0; i < dataPoints.length - 1; i++) {
+                if (hours >= dataPoints[i][0] && hours <= dataPoints[i + 1][0]) {
+                    const x0 = dataPoints[i][0];
+                    const y0 = dataPoints[i][1];
+                    const x1 = dataPoints[i + 1][0];
+                    const y1 = dataPoints[i + 1][1];
+                    
+                    // Linear interpolation formula
+                    return y0 + (hours - x0) * (y1 - y0) / (x1 - x0);
+                }
+            }
+            
+            // If beyond last point, return last value
+            if (hours >= dataPoints[dataPoints.length - 1][0]) {
+                return dataPoints[dataPoints.length - 1][1];
+            }
+            
+            // If before first point, return first value
+            return dataPoints[0][1];
+        }
+
+        // For premature babies (<35 weeks)
+        function calculatePrematureThresholds(category, hours, hasRisk) {
+            if (category === '<1000g') {
+                let ft = 6;
+                if (hours > 15) {
+                    // After 15 hours: FT increases by (6/108) per hour
+                    ft = 6 + ((6 / 108) * (hours - 15));
+                }
+                const et = ft + 3;
+                return { ft, et };
+            } else if (category === '1000-1500') {
+                // Starts at 6.8 and increases by (6.2/108) per hour
+                const ft = 6.8 + ((6.2 / 108) * hours);
+                const et = ft + 4;
+                return { ft, et };
+            } else if (category === '1500-2500') {
+                // Starts at 8.5 and increases by (6.5/96) per hour
+                const ft = 8.5 + ((6.5 / 96) * hours);
+                const et = ft + 5;
+                return { ft, et };
+            }
+        }
+
+        let currentChart = null;
+
+        function createChart(hours, bilirubin, ftThreshold, etThreshold, intensiveCare, gestationalAge, hasRisk) {
+            const ctx = document.getElementById('bilirubinChart');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // Generate curve data for the chart
+            const hourPoints = [];
+            const ftPoints = [];
+            const etPoints = [];
+            const intensiveCarePoints = [];
+            
+            const isPremature = gestationalAge.includes('g') || gestationalAge.includes('1500-2500');
+            
+            for (let h = 0; h <= Math.max(hours + 12, 48); h++) {
+                hourPoints.push(h);
+                
+                if (isPremature) {
+                    const thresholds = calculatePrematureThresholds(gestationalAge, h, hasRisk);
+                    ftPoints.push(thresholds.ft);
+                    etPoints.push(thresholds.et);
+                    intensiveCarePoints.push(thresholds.et - 2);
+                } else {
+                    const data = thresholdData[gestationalAge];
+                    const dataSet = hasRisk ? data.risk : data.noRisk;
+                    ftPoints.push(interpolate(h, dataSet.ft));
+                    etPoints.push(interpolate(h, dataSet.et));
+                    intensiveCarePoints.push(interpolate(h, dataSet.et) - 2);
+                }
+            }
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hourPoints,
+                    datasets: [
+                        {
+                            label: 'Exanguinotransfusió',
+                            data: etPoints,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Escales de cures',
+                            data: intensiveCarePoints,
+                            borderColor: '#fd7e14',
+                            backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Fototeràpia',
+                            data: ftPoints,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Bilirrubina actual',
+                            data: hourPoints.map(h => h === hours ? bilirubin : null),
+                            borderColor: '#667eea',
+                            backgroundColor: '#667eea',
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + ' mg/dL';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hores de vida',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Bilirrubina (mg/dL)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            document.getElementById('chartContainer').style.display = 'block';
+        }
+
+        document.getElementById('bilirubinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const gestationalAge = document.getElementById('gestationalAge').value;
+            const hours = parseFloat(document.getElementById('hours').value);
+            const bilirubin = parseFloat(document.getElementById('bilirubin').value);
+            const albumin = parseFloat(document.getElementById('albumin').value) || null;
+            
+            const riskFactors = document.querySelectorAll('input[name="riskFactors"]:checked');
+            const hasRisk = riskFactors.length > 0;
+            
+            let ftThreshold, etThreshold;
+            
+            // Calculate thresholds based on gestational age
+            if (gestationalAge.includes('g') || gestationalAge.includes('1500-2500')) {
+                // Premature babies
+                const thresholds = calculatePrematureThresholds(gestationalAge, hours, hasRisk);
+                ftThreshold = thresholds.ft;
+                etThreshold = thresholds.et;
+            } else {
+                // Term babies (35-40 weeks)
+                const data = thresholdData[gestationalAge];
+                const dataSet = hasRisk ? data.risk : data.noRisk;
+                ftThreshold = interpolate(hours, dataSet.ft);
+                etThreshold = interpolate(hours, dataSet.et);
+            }
+            
+            const intensiveCareThreshold = etThreshold - 2;
+            
+            // Calculate bili/albumin ratio
+            let biliAlbRatio = null;
+            if (albumin) {
+                biliAlbRatio = (bilirubin / albumin).toFixed(2);
+            }
+            
+            // Determine recommendation
+            let recommendation = '';
+            let resultClass = 'result-success';
+            let resultTitle = '';
+            
+            const diff = ftThreshold - bilirubin;
+            
+            if (bilirubin >= etThreshold) {
+                resultClass = 'result-danger';
+                resultTitle = '🚨 EXANGUINOTRANSFUSIÓ';
+                recommendation = '<strong>URGENT:</strong> La bilirrubina supera el llindar d\'exanguinotransfusió. Contactar amb especialista i preparar procediment immediatament.';
+            } else if (bilirubin >= intensiveCareThreshold) {
+                resultClass = 'result-danger';
+                resultTitle = '⚠️ ESCALES DE CURES';
+                recommendation = '<strong>FOTOTERÀPIA INTENSIVA:</strong> Iniciar fototeràpia intensiva immediatament. Control analític en 4-8 hores. Preparar per possible exanguinotransfusió.';
+            } else if (bilirubin >= ftThreshold) {
+                resultClass = 'result-warning';
+                resultTitle = '💡 FOTOTERÀPIA';
+                recommendation = '<strong>INICIAR FOTOTERÀPIA:</strong> La bilirrubina supera el llindar de fototeràpia. Iniciar tractament i control analític segons evolució.';
+            } else if (diff < 2) {
+                resultClass = 'result-warning';
+                resultTitle = '⚡ PROP DEL LLINDAR';
+                recommendation = '<strong>NO DONAR D\'ALTA:</strong> Repetir control en 4-8 hores. La bilirrubina està molt propera al llindar de fototeràpia.';
+            } else if (diff < 3.5) {
+                resultClass = 'result-success';
+                resultTitle = '✅ CONTROL REQUERIT';
+                recommendation = 'Repetir control en 4-24 hores abans de l\'alta. Educació als pares sobre signes d\'alarma.';
+            } else if (diff < 5.5) {
+                resultClass = 'result-success';
+                resultTitle = '✅ SEGUIMENT';
+                recommendation = 'Repetir control en 1-2 dies. Es pot valorar alta hospitalària amb seguiment ambulatori proper.';
+            } else if (diff < 7) {
+                resultClass = 'result-success';
+                resultTitle = '✅ DINS DE LÍMITS';
+                recommendation = 'Seguiment en 1-2 dies. Es pot donar l\'alta amb controls programats.';
+            } else {
+                resultClass = 'result-success';
+                resultTitle = '✅ NIVELLS ADEQUATS';
+                recommendation = 'Seguiment en 3 dies o segons protocol. Nivells de bilirrubina dins dels límits segurs.';
+            }
+            
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="result-title">${resultTitle}</div>
+                
+                <div class="result-item">
+                    <div class="result-label">Bilirrubina actual</div>
+                    <div class="result-value">${bilirubin.toFixed(1)} mg/dL</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Llindar Fototeràpia</div>
+                    <div class="result-value">${ftThreshold.toFixed(1)} mg/dL</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Llindar Escales de cures</div>
+                    <div class="result-value">${intensiveCareThreshold.toFixed(1)} mg/dL</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Llindar Exanguinotransfusió</div>
+                    <div class="result-value">${etThreshold.toFixed(1)} mg/dL</div>
+                </div>
+            `;
+            
+            if (biliAlbRatio) {
+                html += `
+                    <div class="result-item">
+                        <div class="result-label">Ràtio Bilirrubina/Albúmina</div>
+                        <div class="result-value">${biliAlbRatio}</div>
+                    </div>
+                `;
+            }
+            
+            if (hasRisk) {
+                html += `
+                    <div class="result-item">
+                        <div class="result-label">Factors de risc detectats</div>
+                        <div class="result-value">${riskFactors.length} factors</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="recommendation">
+                    ${recommendation}
+                </div>
+            `;
+            
+            resultsDiv.className = `results ${resultClass} show`;
+            resultsDiv.innerHTML = html;
+            
+            // Create chart
+            createChart(hours, bilirubin, ftThreshold, etThreshold, intensiveCareThreshold, gestationalAge, hasRisk);
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    </script>
+</body>
+</html>
